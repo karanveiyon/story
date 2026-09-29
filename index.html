@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Little Birthday Story ✨</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:100%;height:100%;overflow:hidden}
+  body{
+    font-family:Georgia,"Times New Roman",serif;
+    background:#09091a;
+    color:#fff;
+  }
+  .screen{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    padding:24px;opacity:0;visibility:hidden;transition:opacity .8s ease,visibility .8s;
+    overflow:hidden;
+  }
+  .screen.active{opacity:1;visibility:visible}
+  .stars,.stars:before,.stars:after{
+    position:absolute;inset:0;content:"";pointer-events:none;
+    background-image:
+      radial-gradient(circle at 15% 20%,#fff 0 1px,transparent 1.5px),
+      radial-gradient(circle at 70% 15%,#fff 0 1px,transparent 1.5px),
+      radial-gradient(circle at 85% 70%,#fff 0 1px,transparent 1.5px),
+      radial-gradient(circle at 30% 80%,#fff 0 1px,transparent 1.5px);
+    background-size:180px 180px,230px 230px,270px 270px,310px 310px;
+    animation:twinkle 5s infinite alternate;
+  }
+  .stars:before{transform:translate(80px,40px);opacity:.45;animation-delay:1s}
+  .stars:after{transform:translate(-50px,90px);opacity:.3;animation-delay:2s}
+  @keyframes twinkle{from{opacity:.35}to{opacity:1}}
+
+  .glow{
+    position:absolute;width:65vw;height:65vw;border-radius:50%;
+    background:radial-gradient(circle,rgba(255,100,180,.18),transparent 65%);
+    filter:blur(15px);animation:pulse 5s infinite alternate;
+  }
+  @keyframes pulse{to{transform:scale(1.15);opacity:.7}}
+
+  .card{
+    position:relative;z-index:2;width:min(560px,100%);text-align:center;
+    padding:48px 30px;border:1px solid rgba(255,255,255,.15);
+    border-radius:28px;background:rgba(255,255,255,.07);
+    backdrop-filter:blur(18px);box-shadow:0 25px 80px rgba(0,0,0,.4);
+  }
+  .eyebrow{font-family:Arial,sans-serif;text-transform:uppercase;letter-spacing:4px;font-size:12px;color:#ffb8d9;margin-bottom:20px}
+  h1{font-size:clamp(38px,8vw,70px);line-height:1.05;margin-bottom:20px;
+     background:linear-gradient(90deg,#fff,#ffc4df,#fff);-webkit-background-clip:text;color:transparent}
+  p{font-family:Arial,sans-serif;line-height:1.7;color:#ddd;font-size:16px}
+  .input-wrap{display:flex;gap:10px;margin-top:28px}
+  input{
+    flex:1;min-width:0;padding:16px 18px;border-radius:14px;border:1px solid rgba(255,255,255,.2);
+    outline:none;background:rgba(0,0,0,.25);color:#fff;font-size:16px;
+  }
+  input::placeholder{color:#aaa}
+  button{
+    border:0;border-radius:14px;padding:15px 22px;cursor:pointer;font-weight:700;font-size:15px;
+    color:#20101a;background:linear-gradient(135deg,#ffd2e6,#ff8fc1);
+    box-shadow:0 8px 25px rgba(255,105,170,.25);transition:.25s;
+  }
+  button:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(255,105,170,.4)}
+  .hint{font:12px Arial,sans-serif;color:#888;margin-top:12px}
+  .story-card{max-width:700px}
+  .story-text{min-height:170px;display:flex;align-items:center;justify-content:center}
+  .story-text p{font-size:clamp(19px,4vw,27px);font-family:Georgia,serif;color:#f6eaf0;line-height:1.65}
+  .cursor{display:inline-block;width:2px;height:1em;background:#ff9ac8;margin-left:4px;animation:blink .8s infinite}
+  @keyframes blink{50%{opacity:0}}
+  .progress{height:3px;background:rgba(255,255,255,.12);border-radius:9px;margin-top:30px;overflow:hidden}
+  .bar{height:100%;width:0;background:linear-gradient(90deg,#ff75b6,#ffd0e5);transition:width .2s}
+  .final-card{padding:45px 25px}
+  .cake{font-size:76px;filter:drop-shadow(0 8px 20px rgba(255,150,190,.3));animation:float 2.5s ease-in-out infinite}
+  @keyframes float{50%{transform:translateY(-12px)}}
+  .final-title{font-size:clamp(43px,10vw,82px);margin:12px 0}
+  .name{color:#ffafd1}
+  .wish{font-size:18px!important;max-width:590px;margin:auto}
+  .small{font:12px Arial,sans-serif;color:#999;margin-top:24px}
+  .replay{margin-top:25px;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);box-shadow:none}
+  .balloon{position:absolute;bottom:-120px;width:48px;height:62px;border-radius:50% 50% 48% 48%;
+    opacity:.8;animation:rise linear infinite;z-index:1}
+  .balloon:after{content:"";position:absolute;width:1px;height:90px;background:rgba(255,255,255,.35);left:50%;top:60px}
+  @keyframes rise{to{transform:translateY(-120vh) rotate(12deg)}}
+  .error{font:13px Arial,sans-serif;color:#ff9cbc;margin-top:12px;min-height:16px}
+  @media(max-width:500px){.input-wrap{flex-direction:column}.card{padding:38px 20px}}
+</style>
+</head>
+<body>
+
+<div class="screen active" id="welcome">
+  <div class="stars"></div><div class="glow"></div>
+  <div class="card">
+    <div class="eyebrow">A tiny surprise is waiting ✨</div>
+    <h1>Before the story begins...</h1>
+    <p>There is someone at the heart of this little story.<br>Tell me their name.</p>
+    <div class="input-wrap">
+      <input id="nameInput" maxlength="40" autocomplete="off" placeholder="Enter their name">
+      <button id="beginBtn">Begin ✨</button>
+    </div>
+    <div class="error" id="error"></div>
+    <div class="hint">Just one name. That's all I need.</div>
+  </div>
+</div>
+
+<div class="screen" id="story">
+  <div class="stars"></div><div class="glow"></div>
+  <div class="card story-card">
+    <div class="eyebrow" id="chapter">Chapter One</div>
+    <div class="story-text"><p id="storyText"></p></div>
+    <div class="progress"><div class="bar" id="bar"></div></div>
+  </div>
+</div>
+
+<div class="screen" id="final">
+  <div class="stars"></div><div class="glow"></div>
+  <div id="balloons"></div>
+  <div class="card final-card">
+    <div class="cake">🎂</div>
+    <div class="eyebrow">And the story ends with one beautiful wish...</div>
+    <h1 class="final-title">Happy Birthday,<br><span class="name" id="finalName"></span>! 🎉</h1>
+    <p class="wish" id="finalWish"></p>
+    <button class="replay" id="replayBtn">↻ Read it again</button>
+    <div class="small">Made especially for you, with a little bit of magic. ✨</div>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+let personName = "";
+let timer;
+
+const chapters = [
+  name => `Once upon a time, there was someone named ${name}. Someone whose presence had a way of making ordinary moments feel a little less ordinary.`,
+  name => `Days came and went, carrying little memories with them — smiles, conversations, unexpected moments, and all the tiny things that quietly become precious.`,
+  name => `And somewhere along the way, ${name} became part of a story that was worth celebrating. Not because every chapter was perfect, but because every chapter was uniquely theirs.`,
+  name => `So today, the calendar turns to a special page. A page with one simple message written across it: this day belongs to ${name}.`,
+  name => `May the next chapter bring beautiful surprises, people who make you smile, dreams that find their way to reality, and countless reasons to be happy.`,
+  name => `And if this little story has taught us anything, it is this: some people deserve more than an ordinary wish... they deserve a moment made just for them.`
+];
+
+function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  $(id).classList.add("active");
+}
+
+function typeText(text, done){
+  const el=$("storyText");
+  el.innerHTML="";
+  let i=0;
+  const cursor=document.createElement("span");
+  cursor.className="cursor";
+  el.appendChild(cursor);
+  clearInterval(timer);
+  timer=setInterval(()=>{
+    if(i<text.length){
+      cursor.insertAdjacentText("beforebegin",text[i++]);
+    }else{
+      clearInterval(timer);
+      setTimeout(done,1300);
+    }
+  },22);
+}
+
+function startStory(){
+  show("story");
+  let index=0;
+  const next=()=>{
+    if(index>=chapters.length){finish();return;}
+    $("chapter").textContent=["Chapter One","Chapter Two","Chapter Three","Chapter Four","Chapter Five","The Final Chapter"][index];
+    $("bar").style.width=((index+1)/chapters.length*100)+"%";
+    typeText(chapters[index](personName),()=>{index++;next();});
+  };
+  next();
+}
+
+function finish(){
+  $("finalName").textContent=personName;
+  $("finalWish").textContent=
+    `Happy Birthday, ${personName}. May this new year of your life be filled with laughter, warm memories, brave dreams, and beautiful moments that you will want to remember forever. Keep being wonderfully you. The best chapters are still ahead. ❤️`;
+  makeBalloons();
+  confetti();
+  show("final");
+}
+
+function makeBalloons(){
+  const wrap=$("balloons");
+  wrap.innerHTML="";
+  const shades=["#ff9bc8","#ffd166","#8bd3ff","#c7a4ff","#9ff0c5"];
+  for(let i=0;i<14;i++){
+    const b=document.createElement("div");
+    b.className="balloon";
+    b.style.left=(Math.random()*100)+"%";
+    b.style.animationDuration=(7+Math.random()*7)+"s";
+    b.style.animationDelay=(Math.random()*3)+"s";
+    b.style.background=shades[i%shades.length];
+    b.style.transform=`scale(${.65+Math.random()*.55})`;
+    wrap.appendChild(b);
+  }
+}
+
+function confetti(){
+  for(let i=0;i<90;i++){
+    const c=document.createElement("div");
+    c.style.position="fixed";c.style.left=(Math.random()*100)+"vw";c.style.top="-12px";
+    c.style.width="7px";c.style.height="12px";c.style.zIndex="20";
+    c.style.background=["#ff9bc8","#ffd166","#8bd3ff","#c7a4ff","#fff"][i%5];
+    c.style.transform=`rotate(${Math.random()*360}deg)`;
+    c.style.animation=`fall ${2+Math.random()*3}s linear forwards`;
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),5500);
+  }
+}
+const style=document.createElement("style");
+style.textContent="@keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:0}}";
+document.head.appendChild(style);
+
+$("beginBtn").onclick=()=>{
+  personName=$("nameInput").value.trim().replace(/\s+/g," ");
+  if(!personName){$("error").textContent="Please enter a name first ✨";return;}
+  $("error").textContent="";
+  startStory();
+};
+$("nameInput").addEventListener("keydown",e=>{if(e.key==="Enter")$("beginBtn").click()});
+$("replayBtn").onclick=()=>{ $("nameInput").value=""; $("bar").style.width="0"; show("welcome"); };
+</script>
+</body>
+</html>
